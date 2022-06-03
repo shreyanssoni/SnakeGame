@@ -1,8 +1,8 @@
 let inputDir = {x:0, y:0};
-let speed = 5;
+let speed = 4.5;
 let lastPainTime = 0;
 let snakeArr = [
-    {x:13, y:15}
+    {x:13, y:15},
 ];
 let a = 2;
 let b = 16;
@@ -11,7 +11,7 @@ let food = {x: Math.round(a + (b-a)*Math.random()), y: Math.round(a + (b-a)*Math
 let score = 0;
 scoreBox.innerHTML = "Score: " + score;
 
-// food != snake body, food should vanish when eaten, snake dies if key on self
+// food != snake body, food should vanish when eaten
 
 function main(ctime){
     window.requestAnimationFrame(main);
@@ -24,17 +24,34 @@ function main(ctime){
 }
 
 function gameEngine(){
+    check_hiscore(0);
     //Part 1: updating the snake array
     if(isCollide(snakeArr)){
+        let tempscore = score;
+        console.log(tempscore)
         inputDir = {x:0, y:0};
-        alert("Game Over! Press any key to replay")
-        window.addEventListener('keydown', ()=> {
-            reload();
-        })
+        alert("Game Over! Press Enter to replay", check_hiscore(tempscore))
         snakeArr = [{x:13, y:15}];
-        score = 0;
     };
-    
+
+    function check_hiscore(tempscore){
+        score = 0;
+        let hiscore = localStorage.getItem('highscore');
+        console.log(tempscore, hiscore)
+        if(hiscore == null){
+            localStorage.setItem("highscore", tempscore)
+            console.log("runnning")
+            hiscoreBox.innerHTML = "High Score: " + tempscore;
+        }else{
+            if(tempscore > hiscore){
+                hiscore = tempscore
+            }
+            localStorage.setItem('highscore', hiscore)
+            console.log("set the hiscore")
+            hiscoreBox.innerHTML = "High Score: " + hiscore;
+        }
+    }
+
     function isCollide(snake){
         if(snake[0].x >= 18 || snake[0].x <= 0 || snake[0].y >= 18 || snake[0].y <= 0){
             return true;
@@ -50,7 +67,7 @@ function gameEngine(){
     //if food is eaten, increment the score and regenerate the food
     if(snakeArr[0].y === food.y && snakeArr[0].x === food.x){
         score ++;
-        speed += 0.05;
+        speed += 0.005;
         scoreBox.innerHTML = "Score: " + score;
         snakeArr.unshift({x: snakeArr[0].x + inputDir.x, y: snakeArr[0].y + inputDir.y});
         food = {x: Math.round(a + (b-a)*Math.random()), y: Math.round(a + (b-a)*Math.random())};
@@ -89,21 +106,47 @@ window.addEventListener('keydown', e =>{
     inputDir = {x: 0, y: 1}; //start the game
     switch(e.key){
         case "ArrowUp":
-            inputDir.x = 0; 
-            inputDir.y = -1;
+            // inputDir.x = 0;
+            check("y",-1);
             break;
         case "ArrowDown": 
-            inputDir.x = 0; 
-            inputDir.y = 1;
+            // inputDir.x = 0; 
+            check("y", 1);
             break;
         case "ArrowRight": 
-            inputDir.y = 0; 
-            inputDir.x = 1;
+            // inputDir.y = 0; 
+            check("x",1);
             break;
         case "ArrowLeft":
-            inputDir.y = 0;  
-            inputDir.x = -1;
+            // inputDir.y = 0;  
+            check("x",-1);
             break;
         
     }
 })
+
+function check(val,sign){
+    let sign1 = 0;
+    let sign2 = 0;
+    if(val == 'y'){
+        y1 = snakeArr[0].y;
+        if(snakeArr[1] != undefined){ y2 = snakeArr[1].y} else{ y2 = -10000}
+        sign1 = sign;
+        sign2 = 0;
+    }else if(val == "x"){
+        y1 = snakeArr[0].x;
+        if(snakeArr[1] != undefined){ y2 = snakeArr[1].x} else{ y2 = -10000}
+        sign1 = 0;
+        sign2 = sign;
+    }
+
+    if(snakeArr[1] != undefined && y1 + sign == y2){
+        console.log("he", snakeArr[0], snakeArr[1]) 
+        inputDir.y = -1*sign1;
+        inputDir.x = -1*sign2;
+    }
+    else{
+        inputDir.y = sign1;
+        inputDir.x = sign2;`  `
+    }
+}
