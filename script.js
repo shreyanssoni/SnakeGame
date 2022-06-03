@@ -7,10 +7,9 @@ let snakeArr = [
 let a = 2;
 let b = 16;
 let food = {x: Math.round(a + (b-a)*Math.random()), y: Math.round(a + (b-a)*Math.random())};
-
+check_hiscore(0);
 let score = 0;
 scoreBox.innerHTML = "Score: " + score;
-
 // food != snake body, food should vanish when eaten
 
 function main(ctime){
@@ -24,33 +23,16 @@ function main(ctime){
 }
 
 function gameEngine(){
-    check_hiscore(0);
     //Part 1: updating the snake array
+
     if(isCollide(snakeArr)){
         let tempscore = score;
         console.log(tempscore)
         inputDir = {x:0, y:0};
+        score = 0;
         alert("Game Over! Press Enter to replay", check_hiscore(tempscore))
         snakeArr = [{x:13, y:15}];
     };
-
-    function check_hiscore(tempscore){
-        score = 0;
-        let hiscore = localStorage.getItem('highscore');
-        console.log(tempscore, hiscore)
-        if(hiscore == null){
-            localStorage.setItem("highscore", tempscore)
-            console.log("runnning")
-            hiscoreBox.innerHTML = "High Score: " + tempscore;
-        }else{
-            if(tempscore > hiscore){
-                hiscore = tempscore
-            }
-            localStorage.setItem('highscore', hiscore)
-            console.log("set the hiscore")
-            hiscoreBox.innerHTML = "High Score: " + hiscore;
-        }
-    }
 
     function isCollide(snake){
         if(snake[0].x >= 18 || snake[0].x <= 0 || snake[0].y >= 18 || snake[0].y <= 0){
@@ -148,5 +130,20 @@ function check(val,sign){
     else{
         inputDir.y = sign1;
         inputDir.x = sign2;`  `
+    }
+}
+
+function check_hiscore(tempscore){
+    let hiscore = localStorage.getItem('highscore');
+    console.log(tempscore, hiscore)
+    if(hiscore == null){
+        localStorage.setItem("highscore", tempscore)
+        hiscoreBox.innerHTML = "High Score: " + tempscore;
+    }else{
+        if(tempscore > hiscore){
+            hiscore = tempscore
+        }
+        localStorage.setItem('highscore', hiscore)
+        hiscoreBox.innerHTML = "High Score: " + hiscore;
     }
 }
